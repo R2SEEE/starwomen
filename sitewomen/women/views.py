@@ -4,13 +4,14 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
+from .forms import AddPostForm
 from .models import Women, Category, TagPost
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
         {'title': "Обратная связь", 'url_name': 'contact'},
         {'title': "Войти", 'url_name': 'login'}
-]
+        ]
 
 
 def index(request):
@@ -43,7 +44,25 @@ def show_post(request, post_slug):
 
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            # print(form.cleaned_data)
+            try:
+                Women.objects.create(**form.cleaned_data)
+                return redirect('home')
+            except:
+                form.add_error(None, 'Ошибка добавления поста')
+
+    else:
+        form =  AddPostForm()
+
+    data = {
+        'title': 'Добавление статьи',
+        'menu': menu,
+        'form': form,
+    }
+    return render(request, 'women/addpage.html', data)
 
 
 def contact(request):
@@ -69,7 +88,6 @@ def show_category(request, cat_slug):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
-
 
 
 def show_tag_postlist(request, tag_slug):
