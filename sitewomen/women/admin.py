@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from .models import Women, Category, Husband
 from django.contrib import messages
 from unfold.admin import ModelAdmin
@@ -30,10 +32,11 @@ class MarriedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(ModelAdmin):
-    fields = ['title', 'slug', 'content', 'cat', 'husband', 'tags']
+    fields = ['title', 'slug', 'content', 'photo','cat', 'husband', 'tags']
+    readonly_fields = ['post_photo']
     prepopulated_fields = {'slug': ('title', )}
     filter_horizontal = ['tags']
-    list_display = ('id', 'title', 'time_create', 'is_published', 'bref_info')
+    list_display = ('id', 'post_photo','title', 'time_create', 'is_published')
     list_display_links = ('id', 'title')
     ordering = ('time_create', 'title')
     list_editable = ('is_published', )
@@ -41,11 +44,13 @@ class WomenAdmin(ModelAdmin):
     actions = ['set_published', 'reset_published']
     search_fields = ['title', 'cat__name']
     list_filter = [MarriedFilter, 'cat__name', 'is_published']
+    save_on_top = True
 
-
-    @admin.display(description='Краткое описание')
-    def bref_info(self, women: Women):
-        return f'Описание {len(women.content)} символов'
+    @admin.display(description='Фото rrrrrr')
+    def post_photo(self, women: Women):
+        if women.photo:
+            return mark_safe(f"<img src='{women.photo.url}' width=50>")
+        else: return 'Без фото'
 
     @admin.action(description='Опубликовать выбранные записи')
     def set_published(self, request, queryset):
