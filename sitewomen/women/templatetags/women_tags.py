@@ -3,7 +3,9 @@ import women.views as views
 from women.models import Category, TagPost
 from django.db.models import Count
 
+
 register = template.Library()
+
 
 
 @register.inclusion_tag('women/list_categories.html')
