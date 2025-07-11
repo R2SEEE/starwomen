@@ -51,7 +51,12 @@ class ShowPost(DataMixin, DetailView):
         return self.get_mixin_context(context, title=context['post'].title, cat_selected=1)
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
+        post = get_object_or_404(Women, slug=self.kwargs[self.slug_url_kwarg])
+
+        # Только автор или staff могут видеть черновик
+        if not post.is_published and self.request.user != post.author and not self.request.user.is_staff:
+            raise Http404("Черновик недоступен")
+        return post
 
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
@@ -108,7 +113,7 @@ class TagPostList(DataMixin, ListView):
     allow_empty = True
 
     def get_queryset(self):
-        return Women.published.filter(tags__slug=self.kwargs['tag_slug'])
+        return Women.published.filter(tags__slug=self.kwargs["tag_slug"]).prefetch_related("tags")
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
