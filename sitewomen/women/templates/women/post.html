@@ -18,8 +18,9 @@
 <h1>{{post.title}}</h1>
 
 {% if not post.is_published %}
-<div class="alert alert-warning">Это черновик, будет обработан админом</div>
+<div class="alert alert-warning">Это черновик (виден только вам)</div>
 {% endif %}
+
 
 {% if post.photo %}
 <p><img class="img-article-left" src="{{post.photo.url}}"></p>

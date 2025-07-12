@@ -1,5 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{title}}</h1>
+<div class="about-container">
+    <div class="about-header">
+        <h1> {{ title }}</h1>
+        <div class="header-divider"></div>
+    </div>
+
+    <div class="mission-card">
+        <div class="mission-icon">
+            <i class="icon-bullseye"></i>
+        </div>
+        <div class="mission-content">
+            <h2>Наша миссия</h2>
+            <p>Целью данного проекта является создание интерактивной социальной энциклопедии, посвящённой медийным личностям, которая предоставит пользователям возможность не только получать актуальную информацию о знаменитостях из разных сфер (кино, музыка, спорт), но и активно участвовать в её развитии.</p>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-database"></i>
+            </div>
+            <h3>Обширная база</h3>
+            <p>Актуальные данные о тысячах знаменитостей с фильтрацией по категориям и тегам</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-users"></i>
+            </div>
+            <h3>Сообщество</h3>
+            <p>Возможность добавлять и редактировать информацию </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-star"></i>
+            </div>
+            <h3>Эксклюзивы</h3>
+            <p>Уникальные материалы и редкие фотографии из личных архивов</p>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Присоединяйтесь к нашему сообществу!</h2>
+        <p>Станьте частью проекта и помогите создать самую полную энциклопедию о знаменитостях</p>
+        <div class="cta-buttons">
+            <a href="{% url 'users:register' %}" class="cta-button primary">Зарегистрироваться</a>
+            <a href="https://m.vk.com/dburnosenko" target="_blank" class="cta-button secondary">
+                <i class="icon-vk"></i> Связаться через ВК
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

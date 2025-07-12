@@ -10,7 +10,13 @@
     <div class="form-error">{{ f.errors }}</div>
     {% endfor %}
     <p>
-        <button type="submit">Отправить</button>
+        <button type="submit">{% if form.instance.pk %}Сохранить{% else %}Добавить{% endif %}</button>
+        {% if form.instance.pk %}  <!-- Показываем только для существующих постов -->
+        <a href="{% url 'delete_post' form.instance.slug %}" class="btn btn-danger"
+           onclick="return confirm('Вы точно хотите удалить этот пост?')">
+            Удалить
+        </a>
+        {% endif %}
     </p>
 </form>
 {% endblock %}

@@ -2,6 +2,8 @@ from keyword import kwlist
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.checks import messages
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.transaction import commit
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -9,7 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.template.defaultfilters import slugify, title
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView, CreateView, DeleteView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Women, Category, TagPost, UploadFiles
@@ -28,16 +30,11 @@ class WomenHome(DataMixin, ListView):
 
 
 
-@login_required
-def about(request):
-    contact_list = Women.published.all()
-    paginator = Paginator(contact_list, 3)
 
-    page_number = request.GET.get('page')
-    page_obj= paginator.get_page(page_number)
+def about(request):
 
     return render(request, 'women/about.html',
-                  {'title': 'О сайте', 'page_obj': page_obj})
+                  {'title': 'О сайте'})
 
 
 class ShowPost(DataMixin, DetailView):
@@ -70,20 +67,59 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         return super().form_valid(form)
 
 
+# class UpdatePage(DataMixin, UpdateView):
+#     model = Women
+#     fields = ['title', 'content', 'photo', 'is_published', 'cat']
+#     template_name = 'women/addpage.html'
+#     success_url = reverse_lazy('home')
+#     title_page = 'Редактирование статьи'
+
+
 class UpdatePage(DataMixin, UpdateView):
     model = Women
-    fields = ['title', 'content', 'photo', 'is_published', 'cat']
+    form_class = AddPostForm
     template_name = 'women/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
+    slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return self.get_mixin_context(context, title=f'Редактирование: {self.object.title}')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user  # Сохраняем автора
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        # Получаем объект до обработки запроса
+        self.object = self.get_object()
+
+        # Проверяем права
+        if self.object.author != request.user and not request.user.is_staff:
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
 
 
-def contact(request):
-    return HttpResponse("Обратная связь")
 
+class DeletePost(LoginRequiredMixin, DeleteView):
+    model = Women
+    slug_url_kwarg = 'slug'
+    success_url = reverse_lazy('home')
+    template_name = 'women/confirm_delete.html'
 
-def login(request):
-    return HttpResponse("Авторизация")
+    def dispatch(self, request, *args, **kwargs):
+        # Проверка прав доступа
+        post = self.get_object()
+        if post.author != request.user and not request.user.is_staff:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Пост успешно удален!')
+        return super().delete(request, *args, **kwargs)
+
 
 
 class WomenCategory(DataMixin, ListView):
