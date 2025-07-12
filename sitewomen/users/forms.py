@@ -7,7 +7,7 @@ from django.core.validators import validate_email
 
 
 class LoginUserForm(AuthenticationForm):
-    username = forms.CharField(label='Логин ',
+    username = forms.CharField(label='Логин или email ',
                         widget=forms.TextInput(attrs={'class': 'from-input'}))
 
     password = forms.CharField(label='Пароль ',
@@ -54,7 +54,7 @@ class RegisterUserForm(UserCreationForm):
 
 
 class ProfileUserForm(forms.ModelForm):
-    username = forms.CharField(disabled=True, label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
+    username = forms.CharField(disabled=True, label='Логин ', widget=forms.TextInput(attrs={'class': 'form-input'}))
     email = forms.CharField(disabled=True, label='E-mail', widget=forms.TextInput(attrs={'class': 'form-input'}))
 
     class Meta:

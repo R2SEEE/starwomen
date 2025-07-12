@@ -1,8 +1,8 @@
-from debug_toolbar.urls import app_name
+
 from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import path, reverse_lazy
-from django.views.decorators.http import require_GET
+
 
 from . import views
 

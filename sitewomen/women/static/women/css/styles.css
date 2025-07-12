@@ -494,7 +494,7 @@ ul.lang-list li a:hover {color: #fdc073;}
     border-radius: 2px;
 }
 
-/* Карточка миссии */
+
 .mission-card {
     display: flex;
     background: #fff;
@@ -534,7 +534,6 @@ ul.lang-list li a:hover {color: #fdc073;}
     line-height: 1.8;
 }
 
-/* Сетка возможностей */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
