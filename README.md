@@ -35,6 +35,6 @@ source venv/bin/activate
 venv\Scripts\activate
 pip install -r requirements.txt
 
-### Запуск
+## Запуск
 python manage.py migrate
 python manage.py runserver
